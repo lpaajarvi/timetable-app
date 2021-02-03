@@ -1,0 +1,106 @@
+body {
+   /*font-family: "Libre Baskerville", serif;*/
+   font-family: "Quicksand", sans-serif;
+   background-color: rgb(226, 226, 245);
+}
+
+#weekdaypopup {
+   float: left;
+   position: absolute;
+   /*background-color: rgb(190, 251, 238);*/
+   background-color: rgb(139, 231, 216);
+   padding: 3px;
+   margin-left: 7%;
+}
+
+#weekday_fieldset label {
+   /*float: inline-start;*/
+   text-align: left;
+}
+
+.container {
+   /*width: 300px;*/
+   display: grid;
+   /*grid-gap: 50px;*/
+   grid-template-columns: auto auto auto;
+}
+
+#seuraavavaihe {
+   margin-top: 15px;
+   background-color: rgb(190, 251, 238);
+   cursor: pointer;
+}
+
+#seuraavavaihe:disabled {
+   cursor: not-allowed;
+}
+
+#tyhjenna {
+   margin-top: 15px;
+   background-color: rgb(250, 211, 211);
+   cursor: pointer;
+}
+
+.lomake_table {
+   background-color: #d0e1e1;
+   padding: 10px;
+   float: left;
+   margin-left: 5%;
+   /*position: relative;*/
+}
+
+.lomake_table input:disabled {
+   cursor: not-allowed;
+}
+
+.ui-datepicker {
+   background-color: rgb(139, 231, 216);
+}
+
+.poikkeuspaivat-grid {
+   margin-left: 4%;
+   padding-left: 4%;
+
+   width: 31%;
+
+   display: grid;
+   grid-template-columns: auto auto;
+}
+
+ul {
+   list-style: square;
+
+   list-style-type: circle;
+   border-top: 1px solid lightblue;
+   border-bottom: 1px solid lightblue;
+   background-color: lightblue;
+}
+
+li {
+   margin: 5px;
+   background-color: lightyellow;
+}
+
+li:nth-child(odd) {
+   background-color: rgb(240, 222, 225);
+}
+
+.syotekentta {
+   cursor: pointer;
+}
+
+h3 {
+   margin-left: 25%;
+}
+
+/*
+ei toimi
+#arki-ul li input:invalid {
+   background-color: red;
+}
+
+input:invalid {
+   background-color: red;
+   float: right;
+}
+*/

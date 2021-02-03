@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>DateRange JQuerylla</title>
+      <!-- for the calendar-->
+      <link rel="stylesheet" href="jquery-ui.css" />
+      <!-- google font -->
+      <link
+         href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap"
+         rel="stylesheet"
+      />
+      <link href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap" rel="stylesheet" /> 
+      
+
+      <link rel="stylesheet" href="ownstyles.css" />
+
+      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <script src="ownscript.js"></script>
+      <script src="nimia.js"></script>
+      <script src="navigaatio.js"></script>
+      <script src="poikkeuspaivat.js"></script>
+      <script src="pyhascriptit.js"></script>
+      <script src="utils.js"></script>
+      <script src="html2canvas.min.js"></script>
+
+      <script>
+         $(function () {
+            
+            var dateFormat = "mm/dd/yy",
+               from = $("#from")
+                  .datepicker({
+                     dateFormat: "dd.mm.yy",
+                     defaultDate: "+0w",
+                     changeMonth: true,
+                     numberOfMonths: 3,
+                     firstDay: 1,
+                  })
+                  .on("change", function () {
+                     to.datepicker("option", "minDate", getDate(this));
+
+                     tarkastaPaivamaarat();
+                  }),
+               to = $("#to")
+                  .datepicker({
+                     dateFormat: "dd.mm.yy",
+                     defaultDate: "+0w",
+                     changeMonth: true,
+                     numberOfMonths: 3,
+                     firstDay: 1,
+                  })
+                  .on("change", function () {
+                     from.datepicker("option", "maxDate", getDate(this));
+
+                     tarkastaPaivamaarat();
+                  });
+
+            function getDate(element) {
+               var date;
+               try {
+                  date = $.datepicker.parseDate(dateFormat, element.value);
+               } catch (error) {
+                  date = null;
+               }
+
+               return date;
+            }
+            function tarkastaPaivamaarat() {
+               //tarkistus, jossa siinä tapauksessa, että käyttäjä yrittää laittaa jälkimmäisen
+               //pienemmäksi kuin ensimmäisen, päivämäärä muuttuu samaksi kuin ensimmäinen varoitus-
+               //tekstin saattelemana
+               ekapaiva = pvm_to_date(from.val());
+               tokapaiva = pvm_to_date(to.val());
+
+
+
+               if (ekapaiva > tokapaiva) {
+                  to.val(from.val());
+                  alert(
+                     "Jakso ei voi päättyä ennen alkamista, joten\npäätöspäivä muuttui päiväksi " +
+                        from.val() +
+                        "\n\nMuuta alkamispäivä ensin, jos se on väärä."
+                  );
+
+                  ekapaiva = pvm_to_date(from.val());
+                  tokapaiva = pvm_to_date(to.val());
+                  
+               }
+
+               
+               
+               //vaihdetaan vielä viikonpäivä näkyviin päivämäärien jälkeen
+               var eka = parseInt(ekapaiva.getDay());
+               $("#from_viikonpaiva").text(viikonpaivat[eka]);
+               //ja hyödynnetään "weekdayArray"-arraytä, jota refreshViikonpaivakentta()-metodi pitää ajan tasalla
+               //laittaaksemme huomautuksen, jos käyttäjällä on sellainen viikonpäivä valittuna, joka ei ole aukiolopäivien listassa
+
+               //argh, täytyy säätää vielä vähän, sillä javascriptin viikko alkaa sunnuntaista, ja weekdayArray maanantaista.
+               
+               eka = (eka == 0) ? 6 : eka-1; 
+
+               if (weekdayArray[eka]) {
+                  $("#from_viikonpaiva").css("color", "black");
+               } else $("#from_viikonpaiva").css("color", "brown");
+               
+               var toka = parseInt(tokapaiva.getDay());
+               $("#to_viikonpaiva").text(viikonpaivat[toka]);
+
+               toka = (toka == 0) ? 6 : toka-1;
+
+               if (weekdayArray[toka]) {
+                  $("#to_viikonpaiva").css("color", "black");
+               } else $("#to_viikonpaiva").css("color", "brown");
+            }
+         });
+
+         
+
+         
+
+         $(function () {
+            refreshViikonpaivakentta();
+         });
+         $(function () {
+            aika1 = document.getElementById("aika1");
+            aika2 = document.getElementById("aika2");
+
+            aika1.addEventListener("change", change_aika2);
+
+            /*
+               if (parseInt(aika2.value) <= parseInt(aika1.value)) {
+                  change_aika2();
+               }*/
+
+            /*
+            document
+               .getElementById("aika1")
+               //kun aika1 muuttuu, aika2 päivittyy
+               .addEventListener("change", function() {
+                  if (
+                  change_aika2);*/
+         });
+
+         $(function () {
+            change_aika2();
+         });
+
+         $(function () {
+            lataaLocalAlkutiedot();
+
+         });
+         $(document).ready(function () {
+
+            
+            
+            $("#weekday-base").bind("click", function() {popup(this)});
+            $("#viikonpaivakentta").bind("click", function() {popup(this)});
+
+         });
+
+        
+
+         
+
+      </script>
+   </head>
+   <body>
+      <div class="grid-container">
+
+
+
+
+         <div id="tablediv-grid">
+      <table class="lomake_table" border=0><tr><td>
+      <label for="from">Jakso alkaa:</label></td><td>
+      <input type="text" id="from" name="from" maxlength="8" size="8" />
+      <span id="from_viikonpaiva"></span>  
+   </td>
+   </tr><tr><td>
+      <label for="to">Jakso päättyy:</label></td><td>
+      <input type="text" id="to" name="to" maxlength="8" size="8" />
+   
+      <span id="to_viikonpaiva"></span>   
+   </td>
+
+      
+      <!--
+      <input type="checkbox" id="day1" name="day1" value="ma" />
+      <label for="day1"> Ma</label>
+      <input type="checkbox" id="day2" name="day2" value="ti" />
+      <label for="day2"> Ti</label>
+      <input type="checkbox" id="day3" name="day3" value="ke" />
+      <label for="day3"> Ke</label><br />
+      <input type="submit" value="Submit" />
+      -->
+   </tr>
+      
+         <tr><td><div id="weekday-base">
+         Aukiolopäivät:</div></td><td>
+         <input
+            
+            type="text"
+            id="viikonpaivakentta"
+            maxlength="18"
+            size="18"
+            readonly="readonly"
+         />
+         </td></tr>
+         <div class="widget" id="weekdaypopup" style="display: none">
+            <fieldset id="weekday_fieldset">
+               <legend>Aukiolopäivät: (valitse viikonpäivät)</legend>
+               <label for="Ma">Ma</label>
+               <input type="checkbox" name="Ma" id="Ma" class="weekday" />
+               <label for="Ti">Ti</label>
+               <input
+                  type="checkbox"
+                  name="Ti"
+                  id="Ti"
+                  class="weekday"
+                  checked
+                  
+               />
+               <label for="Ke">Ke</label>
+               <input
+                  type="checkbox"
+                  name="Ke"
+                  id="Ke"
+                  class="weekday"
+                  checked
+               />
+               <label for="To">To</label>
+               <input
+                  type="checkbox"
+                  name="To"
+                  id="To"
+                  class="weekday"
+                  checked
+               />
+               <label for="Pe">Pe</label>
+               <input
+                  type="checkbox"
+                  name="Pe"
+                  id="Pe"
+                  class="weekday"
+                  checked
+               />
+               <label for="La">La</label>
+               <input type="checkbox" name="La" id="La" class="weekday" />
+               <label for="Su">Su</label>
+               <input type="checkbox" name="Su" id="Su" class="weekday" />
+            </fieldset>
+         </div>
+      </div>
+
+      <div id="div_aukioloajat">
+         <tr><td>
+            Aukioloajat (klo):
+            </td>
+            <label for="aika1"></label><td>
+            <select name="aika1" id="aika1">
+               <option>00</option>
+               <option>01</option>
+               <option>02</option>
+               <option>03</option>
+               <option>04</option>
+               <option>05</option>
+               <option>06</option>
+               <option>07</option>
+               <option>08</option>
+               <option>09</option>
+               <option selected="selected">10</option>
+               <option>11</option>
+               <option>12</option>
+               <option>13</option>
+               <option>14</option>
+               <option>15</option>
+               <option>16</option>
+               <option>17</option>
+               <option>18</option>
+               <option>19</option>
+               <option>20</option>
+               <option>21</option>
+               <option>22</option>
+               <option>23</option>
+            </select>
+            -
+            <label for="aika2"></label>
+            <select name="aika2" id="aika2">
+               <option>01</option>
+               <option>02</option>
+               <option>03</option>
+               <option>04</option>
+               <option>05</option>
+               <option>06</option>
+               <option>07</option>
+               <option>08</option>
+               <option>09</option>
+               <option>10</option>
+               <option>11</option>
+               <option>12</option>
+               <option>13</option>
+               <option>14</option>
+               <option>15</option>
+               <option>16</option>
+               <option>17</option>
+               <option selected="selected">18</option>
+               <option>19</option>
+               <option>20</option>
+               <option>21</option>
+               <option>22</option>
+               <option>23</option>
+               <option>24</option>
+            </select>
+         </td>
+      </div>
+   </tr>
+   <tr><td>
+      <button id="tyhjenna" onclick="tyhjenna()">Tyhjennä</button>
+   </td><td>
+      <button id="seuraavavaihe" onclick="avaaPoikkeuspaivat()">Seuraava vaihe</button>
+   </td></tr>
+
+   </table>
+</div>
+<div class="poikkeuspaivat-grid">
+   <div id="poikkeuslista">
+
+   </div>
+   <div id="arkilista"></div>
+
+
+
+</div>
+
+
+
+</div>
+   </body>
+</html>
